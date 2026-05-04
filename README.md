@@ -35,37 +35,62 @@ go2rtc pulls RTSP streams from all cameras and panels. Frigate connects to go2rt
 
 ### 1. Credentials
 
-Copy and fill in both secrets files:
-
 ```bash
 cp .env.example .env
-# edit .env — fill in PANEL_PASSWORD, CAM1_PASSWORD, CAM2_PASSWORD, TEST_PASSWORD, AMI_PASSWORD
-
-cp homeassistant/secrets.yaml.example homeassistant/secrets.yaml
-# edit homeassistant/secrets.yaml — put the full door-open URL with your PANEL_PASSWORD
+# edit .env — fill in all hosts, usernames, and passwords
 ```
 
-`.env` is loaded by go2rtc (native `${VAR}` support) and Asterisk (via `entrypoint.sh`).  
-`homeassistant/secrets.yaml` is loaded by Home Assistant natively via `!secret`.
+All per-deployment values (IPs, usernames, passwords, HA notify target) live in `.env`. Docker Compose injects them into go2rtc, Asterisk, and Home Assistant automatically. See `.env.example` for the full list and comments.
 
-### 2. Asterisk — envsubst requirement
-
-The Asterisk entrypoint (`asterisk/entrypoint.sh`) uses `envsubst` to inject credentials into `pjsip.conf` and `manager.conf` before startup. If the image doesn't have it:
-
-```bash
-docker exec asterisk apt-get install -y gettext-base
-```
-
-Or add it to the entrypoint before the `envsubst` calls:
-```sh
-apt-get install -y gettext-base -qq
-```
-
-### 3. Start
+### 2. Start
 
 ```bash
 docker compose up -d
 ```
+
+### 3. Home Assistant first-run
+
+Open `http://<server-ip>:8123` in a browser. HA will walk you through creating an admin account on first launch.
+
+### 4. Install HACS (Home Assistant Community Store)
+
+HACS is required for the Frigate integration.
+
+```bash
+docker exec homeassistant bash -c "wget -O - https://get.hacs.xyz | bash -"
+```
+
+Then restart HA:
+
+```bash
+docker compose restart homeassistant
+```
+
+In the HA UI: **Settings → Devices & Services → Add Integration** → search **HACS** → follow the prompts (requires a GitHub account to authorize).
+
+### 5. Connect Home Assistant to MQTT
+
+Frigate uses MQTT to push entity states to HA. Without this, all Frigate sensors show as Unavailable.
+
+**Settings → Devices & Services → Add Integration → MQTT**
+
+- Broker: `127.0.0.1`
+- Port: `1883`
+- Username / Password: leave blank
+
+### 6. Install the Frigate integration
+
+In HACS: **HACS → Integrations → Explore & Download** → search **Frigate** → Download.
+
+Restart HA again:
+
+```bash
+docker compose restart homeassistant
+```
+
+Then: **Settings → Devices & Services → Add Integration** → search **Frigate** → set the URL to `http://127.0.0.1:5000`.
+
+Camera entities (`camera.south_panel`, `camera.south_cam1`, `camera.south_cam2`) appear automatically based on the stream names in `frigate/config.yaml`. No manual camera config needed in HA.
 
 ## Network
 

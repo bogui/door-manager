@@ -9,7 +9,7 @@
     webhook_id: doorbell_south
   conditions: []
   actions:
-  - action: notify.mobile_app_sm_a536b
+  - action: !env_var HA_NOTIFY_TARGET
     data:
       title: "South Entrance"
       message: "Apartment {{ trigger.json.apartment }} is calling"

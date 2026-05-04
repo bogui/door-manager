@@ -9,8 +9,8 @@ webrtc:
 
 streams:
   south_panel:
-    - rtsp://admin:${PANEL_PASSWORD}@192.168.1.20:554/videolive
+    - rtsp://${PANEL_USER}:${PANEL_PASSWORD}@${PANEL_HOST}:554/videolive
   south_cam1:
-    - rtsp://admin:${CAM1_PASSWORD}@192.168.70.160:554/Streaming/Channels/101
+    - rtsp://${CAM_USER}:${CAM1_PASSWORD}@${CAM1_HOST}:554/Streaming/Channels/101
   south_cam2:
-    - rtsp://admin:${CAM2_PASSWORD}@192.168.1.32:554/Streaming/Channels/101
+    - rtsp://${CAM_USER}:${CAM2_PASSWORD}@${CAM2_HOST}:554/Streaming/Channels/101

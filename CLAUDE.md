@@ -78,13 +78,29 @@ Building network will be `192.168.1.x`. Device IP assignments:
 | South cam 1 (Hikvision) | 192.168.1.31 |
 | South cam 2 (Hikvision) | 192.168.1.32 |
 
-Dev machine is currently on `192.168.70.x` — configs use building IPs as placeholders until hardware is deployed.
+Dev machine is currently on `192.168.70.x`. The gitignored `.env` holds the active IPs (`CAM1_HOST=192.168.70.160` in dev); `.env.example` has production placeholders.
 
-## Credentials (placeholders — replace before deploy)
+## Environment variables (`.env`)
 
-- `PANEL_PASSWORD` — GDS3710 admin password (used in go2rtc, pjsip.conf, rest_command)
-- `TEST_PASSWORD` — SIP extension 9000 (dev/test only, remove before production)
-- `AMI_PASSWORD` — Asterisk Manager Interface password for HA integration
+All per-deployment values live in `.env`. The rule: if it changes between dev and prod, or differs per install — it goes in `.env`. If it's a stack constant (e.g. `127.0.0.1`, port numbers) — it stays inline.
+
+**Hosts:**
+- `PANEL_HOST` — GDS3710 IP (e.g. `192.168.1.20`)
+- `CAM1_HOST`, `CAM2_HOST` — Hikvision camera IPs
+
+**Usernames:**
+- `PANEL_USER` — GDS3710 admin username
+- `CAM_USER` — shared username for all Hikvision cams
+
+**Passwords:**
+- `PANEL_PASSWORD` — GDS3710 admin password (go2rtc, pjsip.conf, door-open URL)
+- `CAM1_PASSWORD`, `CAM2_PASSWORD` — Hikvision RTSP passwords
+- `TEST_PASSWORD` — SIP extension 9000 (dev only, remove before production)
+- `AMI_PASSWORD` — Asterisk Manager Interface password (used by Home Assistant)
+
+**Home Assistant:**
+- `HA_NOTIFY_TARGET` — mobile app notify service (e.g. `notify.mobile_app_sm_a536b`)
+- `OPEN_SOUTH_DOOR_URL` — assembled by `docker-compose.yml` from `PANEL_HOST`/`PANEL_USER`/`PANEL_PASSWORD`; do not set manually
 
 ## Asterisk Extensions
 
@@ -96,7 +112,7 @@ Dev machine is currently on `192.168.70.x` — configs use building IPs as place
 
 Stored in `homeassistant/automations.yaml` (included via `configuration.yaml`). After editing the file directly, reload via HA UI: Developer Tools → YAML → Reload Automations.
 
-Mobile notify target: `notify.mobile_app_sm_a536b` (admin phone, Samsung SM-A536B).
+Mobile notify target: set via `HA_NOTIFY_TARGET` in `.env` (default: `notify.mobile_app_sm_a536b`, admin phone Samsung SM-A536B).
 
 ## Next Session
 

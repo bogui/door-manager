@@ -1,13 +1,16 @@
 #!/bin/sh
 # Substitute credentials from environment into Asterisk config before startup.
-# Requires: envsubst (from gettext-base package, present on Debian/Ubuntu images).
+# Uses sed — no external dependencies required.
 # Note: only pjsip.conf and manager.conf are templated — extensions.conf is not touched.
 set -e
 
-envsubst '${PANEL_PASSWORD}${TEST_PASSWORD}' \
-  < /templates/pjsip.conf > /etc/asterisk/pjsip.conf
+sed \
+  -e "s|\${PANEL_PASSWORD}|${PANEL_PASSWORD}|g" \
+  -e "s|\${TEST_PASSWORD}|${TEST_PASSWORD}|g" \
+  /templates/pjsip.conf > /etc/asterisk/pjsip.conf
 
-envsubst '${AMI_PASSWORD}' \
-  < /templates/manager.conf > /etc/asterisk/manager.conf
+sed \
+  -e "s|\${AMI_PASSWORD}|${AMI_PASSWORD}|g" \
+  /templates/manager.conf > /etc/asterisk/manager.conf
 
 exec asterisk -f

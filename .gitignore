@@ -4,7 +4,6 @@
 
 # Secrets — never commit these
 .env
-homeassistant/secrets.yaml
 
 # Home Assistant runtime files
 homeassistant/.cache/
@@ -19,6 +18,7 @@ homeassistant/home-assistant.log.1
 homeassistant/home-assistant_v2.db
 homeassistant/home-assistant_v2.db-shm
 homeassistant/home-assistant_v2.db-wal
+homeassistant/home-assistant.log.fault
 
 # Frigate recorded video
 media/

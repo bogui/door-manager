@@ -11,5 +11,5 @@ automation: !include automations.yaml
 
 rest_command:
   open_south_door:
-    url: !secret open_south_door_url
+    url: !env_var OPEN_SOUTH_DOOR_URL
     method: GET
