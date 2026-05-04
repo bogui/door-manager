@@ -1,0 +1,65 @@
+services:
+
+  go2rtc:
+    image: alexxit/go2rtc
+    container_name: go2rtc
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    volumes:
+      - ./go2rtc/config.yaml:/config/go2rtc.yaml
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data:/mosquitto/data
+
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: frigate
+    restart: unless-stopped
+    network_mode: host
+    shm_size: "256mb"
+    volumes:
+      - ./frigate/config.yaml:/config/config.yml
+      - ./media:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    depends_on:
+      - go2rtc
+      - mosquitto
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./homeassistant:/config
+    depends_on:
+      - mosquitto
+      - frigate
+
+  asterisk:
+    image: andrius/asterisk:18
+    container_name: asterisk
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    entrypoint: ["/asterisk-entrypoint.sh"]
+    volumes:
+      - ./asterisk/entrypoint.sh:/asterisk-entrypoint.sh:ro
+      - ./asterisk/pjsip.conf:/templates/pjsip.conf:ro
+      - ./asterisk/manager.conf:/templates/manager.conf:ro
+      - ./asterisk/extensions.conf:/etc/asterisk/extensions.conf
+      - ./asterisk/rtp.conf:/etc/asterisk/rtp.conf
+      - ./asterisk/modules.conf:/etc/asterisk/modules.conf

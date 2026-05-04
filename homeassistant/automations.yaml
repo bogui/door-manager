@@ -1,0 +1,39 @@
+- id: '1777144166511'
+  alias: South Entrance Doorbell
+  description: ''
+  triggers:
+  - trigger: webhook
+    allowed_methods:
+    - POST
+    local_only: true
+    webhook_id: doorbell_south
+  conditions: []
+  actions:
+  - action: notify.mobile_app_sm_a536b
+    data:
+      title: "South Entrance"
+      message: "Apartment {{ trigger.json.apartment }} is calling"
+      data:
+        image: /api/camera_proxy/camera.south_panel
+        actions:
+          - action: OPEN_SOUTH_DOOR
+            title: Open Door
+        tag: doorbell_south
+        channel: Doorbell
+        importance: high
+        ttl: 0
+        priority: high
+  mode: single
+
+- id: '1777144166512'
+  alias: Open South Door
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: OPEN_SOUTH_DOOR
+  conditions: []
+  actions:
+  - action: rest_command.open_south_door
+  mode: single

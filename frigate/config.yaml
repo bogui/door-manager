@@ -1,0 +1,70 @@
+mqtt:
+  enabled: true
+  host: 127.0.0.1
+  port: 1883
+
+cameras:
+  south_panel:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/south_panel
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: false
+      width: 1280
+      height: 720
+      fps: 5
+
+  south_cam1:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/south_cam1
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
+
+  south_cam2:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/south_cam2
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: false
+      width: 1920
+      height: 1080
+      fps: 5
+
+record:
+  enabled: true
+  alerts:
+    retain:
+      days: 14
+  detections:
+    retain:
+      days: 14
+  continuous:
+    days: 0
+  motion:
+    days: 7
+snapshots:
+  enabled: true
+  retain:
+    default: 14
+
+objects:
+  track:
+    - person
+
+detectors:
+  cpu1:
+    type: cpu
+version: 0.17-0

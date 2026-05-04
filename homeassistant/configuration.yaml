@@ -1,0 +1,15 @@
+default_config:
+
+homeassistant:
+  name: Building Intercom
+  unit_system: metric
+  currency: BGN
+  country: BG
+  time_zone: Europe/Sofia
+
+automation: !include automations.yaml
+
+rest_command:
+  open_south_door:
+    url: !secret open_south_door_url
+    method: GET

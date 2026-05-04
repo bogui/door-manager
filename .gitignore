@@ -1,0 +1,27 @@
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+
+# Secrets — never commit these
+.env
+homeassistant/secrets.yaml
+
+# Home Assistant runtime files
+homeassistant/.cache/
+homeassistant/.cloud/
+homeassistant/.storage/
+homeassistant/deps/
+homeassistant/tts/
+homeassistant/.ha_run.lock
+homeassistant/.HA_VERSION
+homeassistant/home-assistant.log
+homeassistant/home-assistant.log.1
+homeassistant/home-assistant_v2.db
+homeassistant/home-assistant_v2.db-shm
+homeassistant/home-assistant_v2.db-wal
+
+# Frigate recorded video
+media/
+
+# MQTT persistence
+mosquitto/data/
